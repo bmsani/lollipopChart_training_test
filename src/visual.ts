@@ -73,16 +73,20 @@ export class Visual implements IVisual {
     const targetLabelWidth = this.getTextWidth(this.formatMeasure(this.data.target, this.data.formatString));
     this.scaleX = scalePoint()
       .domain(Array.from(this.data.items, (d) => d.category))
-      .range([0, this.dim[0] - targetLabelWidth - 12 / 2]); // 12 is fontSize
+      .range([0, this.dim[0] - targetLabelWidth - 12 / 2]) // 12 is fontSize
+      .padding(0.5);
 
-    this.scaleY = scaleLinear().domain([this.data.minValue, this.data.maxValue]).range([this.dim[1], 0]);
+    this.scaleY = scaleLinear()
+      .domain([this.data.minValue, this.data.maxValue])
+      .range([this.dim[1] - 10, 0 + 10]); // 10 is radius value
 
     this.drawTarget();
     this.drawTargetLabel();
+    this.drawDataPoints();
   }
 
   private drawTarget() {
-    let targetLine = this.svg.selectAll("line.target-line").data([this.data.target]);
+    const targetLine = this.svg.selectAll("line.target-line").data([this.data.target]);
 
     targetLine
       .enter()
@@ -99,7 +103,7 @@ export class Visual implements IVisual {
   }
 
   private drawTargetLabel() {
-    let targetLabel = this.svg.selectAll("text.target-label").data([this.data.target]);
+    const targetLabel = this.svg.selectAll("text.target-label").data([this.data.target]);
 
     targetLabel
       .enter()
@@ -117,6 +121,27 @@ export class Visual implements IVisual {
       .attr("font-size", "12pt")
       .attr("font-family", "sans-serif")
       .text(this.formatMeasure(this.data.target, this.data.formatString));
+
+    targetLabel.exit().remove();
+  }
+
+  private drawDataPoints() {
+    const dataPoints = this.svg.selectAll("circle.data-point").data(this.data.items);
+
+    dataPoints
+      .enter()
+      .append("circle")
+      .classed("data-point", true)
+      .attr("cx", (d) => this.scaleX(d.category))
+      .attr("cy", (d) => this.scaleY(d.value))
+      .attr("r", 10);
+
+    dataPoints
+      .attr("cx", (d) => this.scaleX(d.category))
+      .attr("cy", (d) => this.scaleY(d.value))
+      .attr("r", 10);
+
+    dataPoints.exit().remove();
   }
 
   private formatMeasure(measures: number, fs: string): string {

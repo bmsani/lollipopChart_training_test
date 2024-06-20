@@ -16,6 +16,7 @@ export declare class Visual implements IVisual {
     update(options: VisualUpdateOptions): void;
     private drawTarget;
     private drawTargetLabel;
+    private drawDataPoints;
     private formatMeasure;
     private getTextWidth;
     /**

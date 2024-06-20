@@ -36865,13 +36865,17 @@ class Visual {
         const targetLabelWidth = this.getTextWidth(this.formatMeasure(this.data.target, this.data.formatString));
         this.scaleX = (0,d3_scale__WEBPACK_IMPORTED_MODULE_1__/* .scalePoint */ .q2)()
             .domain(Array.from(this.data.items, (d) => d.category))
-            .range([0, this.dim[0] - targetLabelWidth - 12 / 2]); // 12 is fontSize
-        this.scaleY = (0,d3_scale__WEBPACK_IMPORTED_MODULE_1__/* .scaleLinear */ .BY)().domain([this.data.minValue, this.data.maxValue]).range([this.dim[1], 0]);
+            .range([0, this.dim[0] - targetLabelWidth - 12 / 2]) // 12 is fontSize
+            .padding(0.5);
+        this.scaleY = (0,d3_scale__WEBPACK_IMPORTED_MODULE_1__/* .scaleLinear */ .BY)()
+            .domain([this.data.minValue, this.data.maxValue])
+            .range([this.dim[1] - 10, 0 + 10]); // 10 is radius value
         this.drawTarget();
         this.drawTargetLabel();
+        this.drawDataPoints();
     }
     drawTarget() {
-        let targetLine = this.svg.selectAll("line.target-line").data([this.data.target]);
+        const targetLine = this.svg.selectAll("line.target-line").data([this.data.target]);
         targetLine
             .enter()
             .append("line")
@@ -36884,7 +36888,7 @@ class Visual {
         targetLine.exit().remove();
     }
     drawTargetLabel() {
-        let targetLabel = this.svg.selectAll("text.target-label").data([this.data.target]);
+        const targetLabel = this.svg.selectAll("text.target-label").data([this.data.target]);
         targetLabel
             .enter()
             .append("text")
@@ -36900,6 +36904,22 @@ class Visual {
             .attr("font-size", "12pt")
             .attr("font-family", "sans-serif")
             .text(this.formatMeasure(this.data.target, this.data.formatString));
+        targetLabel.exit().remove();
+    }
+    drawDataPoints() {
+        const dataPoints = this.svg.selectAll("circle.data-point").data(this.data.items);
+        dataPoints
+            .enter()
+            .append("circle")
+            .classed("data-point", true)
+            .attr("cx", (d) => this.scaleX(d.category))
+            .attr("cy", (d) => this.scaleY(d.value))
+            .attr("r", 10);
+        dataPoints
+            .attr("cx", (d) => this.scaleX(d.category))
+            .attr("cy", (d) => this.scaleY(d.value))
+            .attr("r", 10);
+        dataPoints.exit().remove();
     }
     formatMeasure(measures, fs) {
         const formatter = powerbi_visuals_utils_formattingutils__WEBPACK_IMPORTED_MODULE_0__/* .valueFormatter */ .wD.create({ format: fs });
