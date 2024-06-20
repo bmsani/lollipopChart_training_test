@@ -18,6 +18,7 @@ export declare class Visual implements IVisual {
     private drawTargetLabel;
     private drawDataPoints;
     private drawConnectors;
+    private drawCategoryLabels;
     private formatMeasure;
     private getTextWidth;
     /**

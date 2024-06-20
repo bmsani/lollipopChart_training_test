@@ -36874,6 +36874,7 @@ class Visual {
         this.drawTargetLabel();
         this.drawConnectors();
         this.drawDataPoints();
+        this.drawCategoryLabels();
     }
     drawTarget() {
         const targetLine = this.svg.selectAll("line.target-line").data([this.data.target]);
@@ -36962,6 +36963,35 @@ class Visual {
         });
         connectors.exit().remove();
         return connectors;
+    }
+    drawCategoryLabels() {
+        const catLabels = this.svg.selectAll("text.category-label").data(this.data.items);
+        catLabels
+            .enter()
+            .append("text")
+            .classed("category-label", true)
+            .attr("x", (d) => this.scaleX(d.category))
+            .attr("y", (d) => {
+            if (d.value >= this.data.target) {
+                return this.scaleY(this.data.target) + 12; // 12 is fontSize
+            }
+            else {
+                return this.scaleY(this.data.target) - 12;
+            }
+        })
+            .text((d) => d.category);
+        catLabels
+            .attr("x", (d) => this.scaleX(d.category))
+            .attr("y", (d) => {
+            if (d.value >= this.data.target) {
+                return this.scaleY(this.data.target) + 12; // 12 is fontSize
+            }
+            else {
+                return this.scaleY(this.data.target) - 12;
+            }
+        })
+            .text((d) => d.category);
+        catLabels.exit().remove();
     }
     formatMeasure(measures, fs) {
         const formatter = powerbi_visuals_utils_formattingutils__WEBPACK_IMPORTED_MODULE_0__/* .valueFormatter */ .wD.create({ format: fs });

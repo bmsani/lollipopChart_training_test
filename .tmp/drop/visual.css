@@ -17,6 +17,12 @@ svg .connector {
   stroke: #202020;
   stroke-width: 1px;
 }
+svg .category-label {
+  alignment-baseline: middle;
+  text-anchor: middle;
+  font-family: sans-serif;
+  font-size: 12pt;
+}
 
 
 /*# sourceMappingURL=https://localhost:8080/assets/visual.css.map*/

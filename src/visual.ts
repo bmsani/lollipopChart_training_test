@@ -84,6 +84,7 @@ export class Visual implements IVisual {
     this.drawTargetLabel();
     this.drawConnectors();
     this.drawDataPoints();
+    this.drawCategoryLabels();
   }
 
   private drawTarget() {
@@ -185,6 +186,37 @@ export class Visual implements IVisual {
     connectors.exit().remove();
 
     return connectors;
+  }
+
+  private drawCategoryLabels() {
+    const catLabels = this.svg.selectAll("text.category-label").data(this.data.items);
+
+    catLabels
+      .enter()
+      .append("text")
+      .classed("category-label", true)
+      .attr("x", (d) => this.scaleX(d.category))
+      .attr("y", (d) => {
+        if (d.value >= this.data.target) {
+          return this.scaleY(this.data.target) + 12; // 12 is fontSize
+        } else {
+          return this.scaleY(this.data.target) - 12;
+        }
+      })
+      .text((d) => d.category);
+
+    catLabels
+      .attr("x", (d) => this.scaleX(d.category))
+      .attr("y", (d) => {
+        if (d.value >= this.data.target) {
+          return this.scaleY(this.data.target) + 12; // 12 is fontSize
+        } else {
+          return this.scaleY(this.data.target) - 12;
+        }
+      })
+      .text((d) => d.category);
+
+    catLabels.exit().remove();
   }
 
   private formatMeasure(measures: number, fs: string): string {
