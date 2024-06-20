@@ -2,6 +2,10 @@ svg {
   background: lightgray;
   cursor: default;
 }
+svg .target-line {
+  stroke: #202020;
+  stroke-width: 1px;
+}
 
 
 /*# sourceMappingURL=https://localhost:8080/assets/visual.css.map*/

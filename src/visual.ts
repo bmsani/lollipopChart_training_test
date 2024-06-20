@@ -34,6 +34,7 @@ import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
 
 import { Selection, select } from "d3-selection";
+import { ScalePoint, scalePoint, ScaleLinear, scaleLinear } from "d3-scale";
 import { VData } from "./interface";
 import { VisualFormattingSettingsModel } from "./settings";
 import { sampleData } from "./sampleData";
@@ -41,6 +42,9 @@ import { sampleData } from "./sampleData";
 export class Visual implements IVisual {
   private target: HTMLElement;
   private svg: Selection<SVGElement, any, HTMLElement, any>;
+  private scaleX: ScalePoint<string>;
+  private dim: [number, number];
+  private scaleY: ScaleLinear<number, number>;
   private formattingSettings: VisualFormattingSettingsModel;
   private formattingSettingsService: FormattingSettingsService;
   private data: VData;
@@ -55,11 +59,39 @@ export class Visual implements IVisual {
 
   public update(options: VisualUpdateOptions) {
     this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualFormattingSettingsModel, options.dataViews);
+    this.data = sampleData;
 
     const w = options.viewport.width;
     const h = options.viewport.width;
-    this.svg.attr("width", w);
-    this.svg.attr("height", h);
+    this.dim = [options.viewport.width, options.viewport.height];
+    this.svg.attr("width", this.dim[0]);
+    this.svg.attr("height", this.dim[1]);
+
+    //scales
+    this.scaleX = scalePoint()
+      .domain(Array.from(this.data.items, (d) => d.category))
+      .range([0, this.dim[0]]);
+
+    this.scaleY = scaleLinear().domain([this.data.minValue, this.data.maxValue]).range([this.dim[1], 0]);
+
+    this.drawTarget();
+  }
+
+  private drawTarget() {
+    let targetLine = this.svg.selectAll("line.target-line").data([this.data.target]);
+
+    targetLine
+      .enter()
+      .append("line")
+      .classed("target-line", true)
+      .attr("x1", 0)
+      .attr("y1", this.scaleY(this.data.target))
+      .attr("x2", this.dim[0])
+      .attr("y2", this.scaleY(this.data.target));
+
+    targetLine.attr("x1", 0).attr("y1", this.scaleY(this.data.target)).attr("x2", this.dim[0]).attr("y2", this.scaleY(this.data.target));
+
+    targetLine.exit().remove();
   }
 
   /**
