@@ -82,6 +82,7 @@ export class Visual implements IVisual {
 
     this.drawTarget();
     this.drawTargetLabel();
+    this.drawConnectors();
     this.drawDataPoints();
   }
 
@@ -142,6 +143,48 @@ export class Visual implements IVisual {
       .attr("r", 10);
 
     dataPoints.exit().remove();
+  }
+
+  private drawConnectors() {
+    const connectors = this.svg.selectAll("line.connector").data(this.data.items);
+
+    connectors
+      .enter()
+      .append("line")
+      .classed("connector", true)
+      .attr("ix", (d, i) => i)
+      .attr("x1", (d) => this.scaleX(d.category))
+      .attr("y1", (d) => this.scaleY(this.data.target))
+      .attr("x2", (d) => this.scaleX(d.category))
+      .attr("y2", (d) => {
+        if (Math.abs(this.scaleY(this.data.target) - this.scaleY(d.value)) <= 10) {
+          // 10 is radius value
+          return this.scaleY(this.data.target);
+        } else if (this.scaleY(this.data.target)) {
+          return this.scaleY(d.value) + 10; // 10 is radius value
+        } else {
+          return this.scaleY(d.value) - 10; // 10 is radius value
+        }
+      });
+
+    connectors
+      .attr("x1", (d) => this.scaleX(d.category))
+      .attr("y1", (d) => this.scaleY(this.data.target))
+      .attr("x2", (d) => this.scaleX(d.category))
+      .attr("y2", (d) => {
+        if (Math.abs(this.scaleY(this.data.target) - this.scaleY(d.value)) <= 10) {
+          // 10 is radius value
+          return this.scaleY(this.data.target);
+        } else if (this.scaleY(this.data.target)) {
+          return this.scaleY(d.value) + 10; // 10 is radius value
+        } else {
+          return this.scaleY(d.value) - 10; // 10 is radius value
+        }
+      });
+
+    connectors.exit().remove();
+
+    return connectors;
   }
 
   private formatMeasure(measures: number, fs: string): string {

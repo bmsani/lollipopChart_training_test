@@ -36872,6 +36872,7 @@ class Visual {
             .range([this.dim[1] - 10, 0 + 10]); // 10 is radius value
         this.drawTarget();
         this.drawTargetLabel();
+        this.drawConnectors();
         this.drawDataPoints();
     }
     drawTarget() {
@@ -36920,6 +36921,47 @@ class Visual {
             .attr("cy", (d) => this.scaleY(d.value))
             .attr("r", 10);
         dataPoints.exit().remove();
+    }
+    drawConnectors() {
+        const connectors = this.svg.selectAll("line.connector").data(this.data.items);
+        connectors
+            .enter()
+            .append("line")
+            .classed("connector", true)
+            .attr("ix", (d, i) => i)
+            .attr("x1", (d) => this.scaleX(d.category))
+            .attr("y1", (d) => this.scaleY(this.data.target))
+            .attr("x2", (d) => this.scaleX(d.category))
+            .attr("y2", (d) => {
+            if (Math.abs(this.scaleY(this.data.target) - this.scaleY(d.value)) <= 10) {
+                // 10 is radius value
+                return this.scaleY(this.data.target);
+            }
+            else if (this.scaleY(this.data.target)) {
+                return this.scaleY(d.value) + 10; // 10 is radius value
+            }
+            else {
+                return this.scaleY(d.value) - 10; // 10 is radius value
+            }
+        });
+        connectors
+            .attr("x1", (d) => this.scaleX(d.category))
+            .attr("y1", (d) => this.scaleY(this.data.target))
+            .attr("x2", (d) => this.scaleX(d.category))
+            .attr("y2", (d) => {
+            if (Math.abs(this.scaleY(this.data.target) - this.scaleY(d.value)) <= 10) {
+                // 10 is radius value
+                return this.scaleY(this.data.target);
+            }
+            else if (this.scaleY(this.data.target)) {
+                return this.scaleY(d.value) + 10; // 10 is radius value
+            }
+            else {
+                return this.scaleY(d.value) - 10; // 10 is radius value
+            }
+        });
+        connectors.exit().remove();
+        return connectors;
     }
     formatMeasure(measures, fs) {
         const formatter = powerbi_visuals_utils_formattingutils__WEBPACK_IMPORTED_MODULE_0__/* .valueFormatter */ .wD.create({ format: fs });

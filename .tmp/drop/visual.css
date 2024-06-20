@@ -9,6 +9,14 @@ svg .target-line {
 svg .target-label {
   alignment-baseline: middle;
 }
+svg .data-point {
+  stroke: #202020;
+  stroke-width: 1px;
+}
+svg .connector {
+  stroke: #202020;
+  stroke-width: 1px;
+}
 
 
 /*# sourceMappingURL=https://localhost:8080/assets/visual.css.map*/
