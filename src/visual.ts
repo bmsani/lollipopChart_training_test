@@ -33,6 +33,8 @@ import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructor
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
 
+import { valueFormatter, textMeasurementService } from "powerbi-visuals-utils-formattingutils";
+import measureSvgTextWidth = textMeasurementService.measureSvgTextWidth;
 import { Selection, select } from "d3-selection";
 import { ScalePoint, scalePoint, ScaleLinear, scaleLinear } from "d3-scale";
 import { VData } from "./interface";
@@ -68,9 +70,10 @@ export class Visual implements IVisual {
     this.svg.attr("height", this.dim[1]);
 
     //scales
+    const targetLabelWidth = this.getTextWidth(this.formatMeasure(this.data.target, this.data.formatString));
     this.scaleX = scalePoint()
       .domain(Array.from(this.data.items, (d) => d.category))
-      .range([0, this.dim[0]]);
+      .range([0, this.dim[0] - targetLabelWidth]);
 
     this.scaleY = scaleLinear().domain([this.data.minValue, this.data.maxValue]).range([this.dim[1], 0]);
 
@@ -86,12 +89,26 @@ export class Visual implements IVisual {
       .classed("target-line", true)
       .attr("x1", 0)
       .attr("y1", this.scaleY(this.data.target))
-      .attr("x2", this.dim[0])
+      .attr("x2", this.scaleX.range()[1])
       .attr("y2", this.scaleY(this.data.target));
 
     targetLine.attr("x1", 0).attr("y1", this.scaleY(this.data.target)).attr("x2", this.dim[0]).attr("y2", this.scaleY(this.data.target));
 
     targetLine.exit().remove();
+  }
+
+  private formatMeasure(measures: number, fs: string): string {
+    const formatter = valueFormatter.create({ format: fs });
+    return formatter.format(measures);
+  }
+
+  private getTextWidth(txt: string): number {
+    const textProperties = {
+      test: txt,
+      fontFamily: "sans-serif",
+      fontSize: "12pt",
+    };
+    return measureSvgTextWidth(textProperties);
   }
 
   /**
