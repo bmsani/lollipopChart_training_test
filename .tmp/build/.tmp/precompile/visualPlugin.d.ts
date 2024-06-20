@@ -1,0 +1,4 @@
+import powerbiVisualsApi from "powerbi-visuals-api";
+import IVisualPlugin = powerbiVisualsApi.visuals.plugins.IVisualPlugin;
+declare var lollipopChartTrainingTest9AFB34FE092740DCB72A8C357700A80A_DEBUG: IVisualPlugin;
+export default lollipopChartTrainingTest9AFB34FE092740DCB72A8C357700A80A_DEBUG;
