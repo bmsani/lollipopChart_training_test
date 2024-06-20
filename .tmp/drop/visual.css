@@ -6,6 +6,9 @@ svg .target-line {
   stroke: #202020;
   stroke-width: 1px;
 }
+svg .target-label {
+  alignment-baseline: middle;
+}
 
 
 /*# sourceMappingURL=https://localhost:8080/assets/visual.css.map*/

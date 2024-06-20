@@ -73,11 +73,12 @@ export class Visual implements IVisual {
     const targetLabelWidth = this.getTextWidth(this.formatMeasure(this.data.target, this.data.formatString));
     this.scaleX = scalePoint()
       .domain(Array.from(this.data.items, (d) => d.category))
-      .range([0, this.dim[0] - targetLabelWidth]);
+      .range([0, this.dim[0] - targetLabelWidth - 12 / 2]); // 12 is fontSize
 
     this.scaleY = scaleLinear().domain([this.data.minValue, this.data.maxValue]).range([this.dim[1], 0]);
 
     this.drawTarget();
+    this.drawTargetLabel();
   }
 
   private drawTarget() {
@@ -92,9 +93,30 @@ export class Visual implements IVisual {
       .attr("x2", this.scaleX.range()[1])
       .attr("y2", this.scaleY(this.data.target));
 
-    targetLine.attr("x1", 0).attr("y1", this.scaleY(this.data.target)).attr("x2", this.dim[0]).attr("y2", this.scaleY(this.data.target));
+    targetLine.attr("x1", 0).attr("y1", this.scaleY(this.data.target)).attr("x2", this.scaleX.range()[1]).attr("y2", this.scaleY(this.data.target));
 
     targetLine.exit().remove();
+  }
+
+  private drawTargetLabel() {
+    let targetLabel = this.svg.selectAll("text.target-label").data([this.data.target]);
+
+    targetLabel
+      .enter()
+      .append("text")
+      .classed("target-label", true)
+      .attr("x", this.scaleX.range()[1] + 12 / 2) // 12 is fontsize
+      .attr("y", this.scaleY(this.data.target))
+      .attr("font-size", "12pt")
+      .attr("font-family", "sans-serif")
+      .text(this.formatMeasure(this.data.target, this.data.formatString));
+
+    targetLabel
+      .attr("x", this.scaleX.range()[1] + 12 / 2) // 12 is fontsize
+      .attr("y", this.scaleY(this.data.target))
+      .attr("font-size", "12pt")
+      .attr("font-family", "sans-serif")
+      .text(this.formatMeasure(this.data.target, this.data.formatString));
   }
 
   private formatMeasure(measures: number, fs: string): string {

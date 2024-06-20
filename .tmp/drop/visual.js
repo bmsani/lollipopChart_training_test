@@ -36865,9 +36865,10 @@ class Visual {
         const targetLabelWidth = this.getTextWidth(this.formatMeasure(this.data.target, this.data.formatString));
         this.scaleX = (0,d3_scale__WEBPACK_IMPORTED_MODULE_1__/* .scalePoint */ .q2)()
             .domain(Array.from(this.data.items, (d) => d.category))
-            .range([0, this.dim[0] - targetLabelWidth]);
+            .range([0, this.dim[0] - targetLabelWidth - 12 / 2]); // 12 is fontSize
         this.scaleY = (0,d3_scale__WEBPACK_IMPORTED_MODULE_1__/* .scaleLinear */ .BY)().domain([this.data.minValue, this.data.maxValue]).range([this.dim[1], 0]);
         this.drawTarget();
+        this.drawTargetLabel();
     }
     drawTarget() {
         let targetLine = this.svg.selectAll("line.target-line").data([this.data.target]);
@@ -36879,8 +36880,26 @@ class Visual {
             .attr("y1", this.scaleY(this.data.target))
             .attr("x2", this.scaleX.range()[1])
             .attr("y2", this.scaleY(this.data.target));
-        targetLine.attr("x1", 0).attr("y1", this.scaleY(this.data.target)).attr("x2", this.dim[0]).attr("y2", this.scaleY(this.data.target));
+        targetLine.attr("x1", 0).attr("y1", this.scaleY(this.data.target)).attr("x2", this.scaleX.range()[1]).attr("y2", this.scaleY(this.data.target));
         targetLine.exit().remove();
+    }
+    drawTargetLabel() {
+        let targetLabel = this.svg.selectAll("text.target-label").data([this.data.target]);
+        targetLabel
+            .enter()
+            .append("text")
+            .classed("target-label", true)
+            .attr("x", this.scaleX.range()[1] + 12 / 2) // 12 is fontsize
+            .attr("y", this.scaleY(this.data.target))
+            .attr("font-size", "12pt")
+            .attr("font-family", "sans-serif")
+            .text(this.formatMeasure(this.data.target, this.data.formatString));
+        targetLabel
+            .attr("x", this.scaleX.range()[1] + 12 / 2) // 12 is fontsize
+            .attr("y", this.scaleY(this.data.target))
+            .attr("font-size", "12pt")
+            .attr("font-family", "sans-serif")
+            .text(this.formatMeasure(this.data.target, this.data.formatString));
     }
     formatMeasure(measures, fs) {
         const formatter = powerbi_visuals_utils_formattingutils__WEBPACK_IMPORTED_MODULE_0__/* .valueFormatter */ .wD.create({ format: fs });
